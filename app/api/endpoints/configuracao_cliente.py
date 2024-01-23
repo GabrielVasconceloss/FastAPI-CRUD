@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app.api import deps
 from app.crud import crud_configuracao_cliente as crud
 from app.crud import crud_cliente, crud_aprovadores_cliente, crud_tipos_rating_cliente, crud_alcadas_cliente
-from app.schemas.configuracao_cliente import ConfiguracaoCliente, ConfiguracaoClienteCreate
+from app.schemas.configuracao_cliente import ConfiguracaoCliente, ConfiguracaoClienteCreate, ConfiguracaoClienteUpdate
 from app.schemas.cliente import ClienteResponse, AprovadoresClienteResponse, TiposRatingClienteResponse, AlcadasClienteResponse
 from typing import List, Any
 
@@ -42,6 +42,7 @@ def read_configuracao_cliente(
     else:
         aprovadores_cliente_response = [
             AprovadoresClienteResponse(
+                id=aprovador.id,
                 cargo_aprovador=aprovador.cargo_aprovador,
                 login_aprovador=aprovador.login_aprovador,
                 perfil_aprovador=aprovador.perfil_aprovador,
@@ -57,6 +58,7 @@ def read_configuracao_cliente(
     else:
         tipos_rating_clienteResponse = [
             TiposRatingClienteResponse(
+                id=tiposratingcliente.id,
                 codigo_rating=tiposratingcliente.codigo_rating,
                 descricao_rating=tiposratingcliente.descricao_rating,
                 prob_default_inicial=tiposratingcliente.prob_default_inicial,
@@ -71,6 +73,7 @@ def read_configuracao_cliente(
     else:
         alcadas_cliente_response = [
             AlcadasClienteResponse(
+                id=alcadascliente.id,
                 limite_minimo_aprovacao=alcadascliente.limite_minimo_aprovacao,
                 limite_maximo_aprovacao=alcadascliente.limite_maximo_aprovacao,
                 perfil_aprovador=alcadascliente.perfil_aprovador,
@@ -121,29 +124,12 @@ def update_configuracao_cliente(
         id_cliente: int,
         *,
         db: Session = Depends(deps.get_db),
-        id_tipo_limite: int,
-        id_limite: int,
-        id_input_carteira: int,
-        id_conversao: int,
-        valor_base_proprietaria: float,
-        qtd_dias_validade_analise: int,
-        qtd_dias_intervalo_minimo_aprovacoes: int,
-        qtd_dias_intervalo_maximo_aprovacoes: int,
+        params: ConfiguracaoClienteUpdate,
 ) -> Any:
     """
     Update ConfiguracaoCliente by ID.
-    """
-    configuracao_cliente_data = {
-        "id_tipo_limite": id_tipo_limite,
-        "id_limite": id_limite,
-        "id_input_carteira": id_input_carteira,
-        "id_conversao": id_conversao,
-        "valor_base_proprietaria": valor_base_proprietaria,
-        "qtd_dias_validade_analise": qtd_dias_validade_analise,
-        "qtd_dias_intervalo_minimo_aprovacoes": qtd_dias_intervalo_minimo_aprovacoes,
-        "qtd_dias_intervalo_maximo_aprovacoes": qtd_dias_intervalo_maximo_aprovacoes,
-    }
-
+    """ 
+    params_dict = dict(params)
     configuracao_cliente_in_db = crud.get_configuracao_cliente(db, id_cliente)
     if configuracao_cliente_in_db is None:
         raise HTTPException(status_code=404, detail="ConfiguracaoCliente not found")
@@ -151,7 +137,7 @@ def update_configuracao_cliente(
 
 
     configuracao_cliente_updated = crud.update_configuracao_cliente(
-        db, db_obj=configuracao_cliente_in_db, obj_in=configuracao_cliente_data
+        db, db_obj=configuracao_cliente_in_db, obj_in=params_dict
     )
     return configuracao_cliente_updated
 

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.api import deps
 from app.crud import crud_tipos_rating_cliente, crud_configuracao_cliente, crud_cliente
-from app.schemas.tipos_rating_cliente import TiposRatingCliente, TiposRatingClienteCreate
+from app.schemas.tipos_rating_cliente import TiposRatingCliente, TiposRatingClienteCreate, TiposRatingClienteUpdate
 from typing import List, Any
 
 router = APIRouter()
@@ -65,33 +65,20 @@ def update_tipos_rating_cliente(
         id_tipo_rating: int,
         *,
         db: Session = Depends(deps.get_db),
-        id_cliente: int,
-        codigo_rating: str,
-        descricao_rating: str,
-        prob_default_inicial: float,
-        prob_default_final: float,
+        params: TiposRatingClienteUpdate,
 ) -> Any:
     """
     Update TiposRatingCliente by id_aprovador.
     """
-    tipos_rating_cliente_data = {
-        "id_cliente": id_cliente,
-        "codigo_rating": codigo_rating,
-        "descricao_rating": descricao_rating,
-        "prob_default_inicial": prob_default_inicial,
-        "prob_default_final": prob_default_final,
-    }
-
+    params_dict = dict(params)
     tipos_rating_cliente_in_db = crud_tipos_rating_cliente.get_unic_tipos_rating_cliente(db, id_tipo_rating)
     if tipos_rating_cliente_in_db is None:
         raise HTTPException(status_code=404, detail="TiposRatingCliente  not found")
 
-    cliente = crud_cliente.get_cliente(db, id_cliente)
-    if cliente is None:
-        raise HTTPException(status_code=404, detail="Cliente not found")
+
 
     tipos_rating_cliente_db_updated = crud_tipos_rating_cliente.update_tipos_rating_cliente(
-        db, db_obj=tipos_rating_cliente_in_db, obj_in=tipos_rating_cliente_data
+        db, db_obj=tipos_rating_cliente_in_db, obj_in=params_dict
     )
     return tipos_rating_cliente_db_updated
 

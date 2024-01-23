@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.api import deps
 from app.crud import crud_alcadas_cliente, crud_configuracao_cliente, crud_tipos_rating_cliente, crud_cliente
-from app.schemas.alcadas_cliente import AlcadasCliente, AlcadasClienteCreate
+from app.schemas.alcadas_cliente import AlcadasCliente, AlcadasClienteCreate, AlcadasClienteUpdate
 from typing import List, Any
 
 router = APIRouter()
@@ -71,39 +71,19 @@ def update_alcadas_cliente(
         id_alcadas: int,
         *,
         db: Session = Depends(deps.get_db),
-        id_cliente: int,
-        id_tipo_rating: int,
-        limite_minimo_aprovacao: float,
-        limite_maximo_aprovacao: float,
-        perfil_aprovador: str,
-        percentual_aprovacao: float,
+        params: AlcadasClienteUpdate,
 ) -> Any:
     """
     Update AlcadasCliente by id_alcadas.
     """
-    alcadas_cliente_data = {
-        "id_cliente": id_cliente,
-        "id_tipo_rating": id_tipo_rating,
-        "limite_minimo_aprovacao": limite_minimo_aprovacao,
-        "limite_maximo_aprovacao": limite_maximo_aprovacao,
-        "perfil_aprovador": perfil_aprovador,
-        "percentual_aprovacao": percentual_aprovacao,
-    }
-
+    params_dict = dict(params)
     alcadas_cliente_in_db = crud_alcadas_cliente.get_unic_alcadas_cliente(db, id_alcadas)
     if alcadas_cliente_in_db is None:
         raise HTTPException(status_code=404, detail="AlcadasCliente not found")
 
-    tipos_rating_cliente = crud_tipos_rating_cliente.get_unic_tipos_rating_cliente(db, id_tipo_rating)
-    if tipos_rating_cliente is None:
-        raise HTTPException(status_code=404, detail="TiposRatingCliente  not found")
-
-    cliente = crud_cliente.get_cliente(db, id_cliente)
-    if cliente is None:
-        raise HTTPException(status_code=404, detail="Cliente not found")
 
     alcadas_cliente_updated = crud_alcadas_cliente.update_alcadas_cliente(
-        db, db_obj=alcadas_cliente_in_db, obj_in=alcadas_cliente_data
+        db, db_obj=alcadas_cliente_in_db, obj_in=params_dict
     )
     return alcadas_cliente_updated
 

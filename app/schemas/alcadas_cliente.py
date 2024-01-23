@@ -26,3 +26,9 @@ class AlcadasClienteInDB(AlcadasClienteBase):
 
 class AlcadasCliente(AlcadasClienteInDB):
     pass
+
+class AlcadasClienteUpdate(BaseModel):
+    limite_minimo_aprovacao: float
+    limite_maximo_aprovacao: float
+    perfil_aprovador: str
+    percentual_aprovacao: float

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.api import deps
 from app.crud import crud_aprovadores_cliente, crud_configuracao_cliente, crud_cliente
-from app.schemas.aprovadores_cliente import AprovadoresClienteCreate, AprovadoresCliente
+from app.schemas.aprovadores_cliente import AprovadoresClienteCreate, AprovadoresCliente, AprovadoresClienteUpdate
 from typing import List, Any
 
 router = APIRouter()
@@ -64,33 +64,19 @@ def update_aprovadores_cliente(
         id_aprovador: int,
         *,
         db: Session = Depends(deps.get_db),
-        id_cliente: int,
-        cargo_aprovador: str,
-        login_aprovador: str,
-        perfil_aprovador: str,
-        percentual_peso_aprovador: float,
+        params: AprovadoresClienteUpdate,
 ) -> Any:
     """
     Update AprovadoresCliente by id_aprovador.
     """
-    aprovadores_cliente_data = {
-        "id_cliente": id_cliente,
-        "cargo_aprovador": cargo_aprovador,
-        "login_aprovador": login_aprovador,
-        "perfil_aprovador": perfil_aprovador,
-        "percentual_peso_aprovador": percentual_peso_aprovador,
-    }
-
+    
+    params_dict = dict(params)
     aprovadores_cliente_in_db = crud_aprovadores_cliente.get_unic_aprovadores_cliente(db, id_aprovador)
     if aprovadores_cliente_in_db is None:
         raise HTTPException(status_code=404, detail="AprovadoresCliente  not found")
 
-    cliente = crud_cliente.get_cliente(db, id_cliente)
-    if cliente is None:
-        raise HTTPException(status_code=404, detail="Cliente not found")
-
     aprovadores_cliente_updated = crud_aprovadores_cliente.update_aprovadores_cliente(
-        db, db_obj=aprovadores_cliente_in_db, obj_in=aprovadores_cliente_data
+        db, db_obj=aprovadores_cliente_in_db, obj_in=params_dict
     )
     return aprovadores_cliente_updated
 

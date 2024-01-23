@@ -3,11 +3,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
 from sqlalchemy.orm import sessionmaker
 
-POSTGRES_USER = "fastapi"
-POSTGRES_PASSWORD = "1234"
-POSTGRES_DB = "databasecl"
+POSTGRES_USER = "fast"
+POSTGRES_PASSWORD = "25673275"
+POSTGRES_DB = "fastapi"
 POSTGRES_HOST = "localhost"
-POSTGRES_PORT = "5432"
+POSTGRES_PORT = "5433"
 
 DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
 
@@ -15,7 +15,7 @@ engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base: DeclarativeMeta = declarative_base()
 
-from app.db.models import cliente, configuracao_cliente, aprovadores_cliente, tipos_rating_cliente, alcadas_cliente
+from app.db.models import cliente, configuracao_cliente, aprovadores_cliente, tipos_rating_cliente, alcadas_cliente, proposta_contraparte, limites_proposta, observacoes_proposta
 
 # Função para criar tabelas
 def create_tables():

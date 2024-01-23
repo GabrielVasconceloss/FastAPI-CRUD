@@ -22,3 +22,9 @@ class TiposRatingClienteInDB(TiposRatingClienteBase):
 
 class TiposRatingCliente(TiposRatingClienteInDB):
     pass
+
+class TiposRatingClienteUpdate(BaseModel):
+    codigo_rating: str
+    descricao_rating: str
+    prob_default_inicial: float
+    prob_default_final: float

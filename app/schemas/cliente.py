@@ -2,18 +2,21 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 class AprovadoresClienteResponse(BaseModel):
+    id: int
     cargo_aprovador: str
     login_aprovador: str
     perfil_aprovador: str
     percentual_peso_aprovador: float
 
 class TiposRatingClienteResponse(BaseModel):
+    id: int
     codigo_rating: str
     descricao_rating: str
     prob_default_inicial: float
     prob_default_final: float
 
 class AlcadasClienteResponse(BaseModel):
+    id: int
     limite_minimo_aprovacao: float
     limite_maximo_aprovacao: float
     perfil_aprovador: str

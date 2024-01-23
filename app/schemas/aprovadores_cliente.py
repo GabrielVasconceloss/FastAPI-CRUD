@@ -25,3 +25,9 @@ class AprovadoresClienteInDB(AprovadoresClienteBase):
 
 class AprovadoresCliente(AprovadoresClienteInDB):
     pass
+
+class AprovadoresClienteUpdate(BaseModel):
+    cargo_aprovador: str
+    login_aprovador: str
+    perfil_aprovador: str
+    percentual_peso_aprovador: float
